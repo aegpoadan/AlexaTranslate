@@ -1,17 +1,17 @@
 let Alexa = require('alexa-sdk');
 let AWS = require('aws-sdk');
-AWS.config.update({accessKeyId: "AKIAJYJCD7XEQEWWWOFA", secretAccessKey: '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'});
+AWS.config.update({accessKeyId: 'AKIAIUCBGMBYUKXAIU3Q', secretAccessKey: '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'});
 const fs = require('fs')
 const dictionaries = require('./dictionaries.js');
 const s3baseURL = 'https://translate-audio.s3.amazonaws.com/';
 const bucket = 'translate-audio';
 const request = require('request');
-const gkey = 'ya29.ElrJBJyi3yI5ZfMkk5Xxsz9ncHMuzYKx1jP6YaLaobP7wkQWHyzWoPIntjRU3S3v_lgBs7Z5aTwsmeNPsrPEOXmDwFCaR7g_liPgnNw3XhF5LkjKLj_utR49uNc';
+const gkey = 'ya29.ElrJBD8Lt_KgMo2JrG0i7ODep5tvB3XR0fEMDsyVF6tENS1NL0O0jqNN0ZqVahj6yz_yXOsreB8bPAsi-EbYbOpCXYvVU3E1l4nxQUNHIXWIfaXEUDbdFhZ6ucc';
 let translateURL = 'https://translation.googleapis.com/language/translate/v2';
 let axios = require('axios');
 
 axios.defaults.baseURL = 'https://translation.googleapis.com/language/translate/';
-axios.defaults.headers.common['Authorization'] = 'Bearer ya29.ElrJBJyi3yI5ZfMkk5Xxsz9ncHMuzYKx1jP6YaLaobP7wkQWHyzWoPIntjRU3S3v_lgBs7Z5aTwsmeNPsrPEOXmDwFCaR7g_liPgnNw3XhF5LkjKLj_utR49uNc';
+axios.defaults.headers.common['Authorization'] = 'Bearer ya29.ElrJBD8Lt_KgMo2JrG0i7ODep5tvB3XR0fEMDsyVF6tENS1NL0O0jqNN0ZqVahj6yz_yXOsreB8bPAsi-EbYbOpCXYvVU3E1l4nxQUNHIXWIfaXEUDbdFhZ6ucc';
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 
 const Polly = new AWS.Polly({
@@ -63,8 +63,6 @@ function translateText(language, text, callback) {
 	    format: 'text'
 	  })
 	  .then(function (response) {
-	    console.log(response.data.data.translations[0].translatedText);
-
 	    function textToSpeech(text) {
 				let params = {
 			    'Text': text,
@@ -79,7 +77,6 @@ function translateText(language, text, callback) {
 			        if (data.AudioStream instanceof Buffer) {
 			            putObjectToS3(bucket, 'speechTranslated.mp3', data.AudioStream);
 			            var resultURL = s3baseURL + 'speechTranslated.mp3';
-			            console.log(resultURL);
 			            callback(resultURL);
 			        }
 			    }
@@ -101,8 +98,6 @@ let handlers = {
     		var saveThis = this;
 
     		translateText(language, text, function(resultURL) {
-    			console.log('result URL: ' + resultURL);
-
     			saveThis.response.audioPlayerPlay('REPLACE_ALL', resultURL, '0', null, 0);
           saveThis.emit(':responseReady');
     		});
